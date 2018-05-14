@@ -46,7 +46,6 @@ func main() {
       }
   }()
 
-  root_endpoint := "http://ec2-13-56-158-108.us-west-1.compute.amazonaws.com:3003"
   namespace_notification_root_domain := "nnrd0"
   event_status_update := "esu0"
   event_status_result := "esr0"
@@ -65,7 +64,7 @@ func main() {
     so.On(event_status_update, func(data string) {
       fmt.Println("[SOCKETIO] EVENT ")
 
-      result := getAPITestResult(root_endpoint)
+      result := getAPITestResult(data)
       // send result to web page
       result_string := fmt.Sprintf("%#v", result)
       so.Emit(event_status_result, result_string)
