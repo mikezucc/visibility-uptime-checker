@@ -49,7 +49,7 @@ func main() {
   root_endpoint := "http://ec2-13-56-158-108.us-west-1.compute.amazonaws.com:3003"
   namespace_notification_root_domain := "nnrd0"
   event_status_update := "esu0"
-  event_status_result := "ess0"
+  event_status_result := "esr0"
   server_uptime_update := "suu0"
 
   server_uptime_start := time.Now().Round(0).Add(-(3600 + 60 + 45) * time.Second)

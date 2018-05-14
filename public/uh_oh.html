@@ -1,0 +1,31 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+
+  <div class="alert alert-warning alert-dismissible fade show" role="alert">
+    Holy guacamole! Running an API Check against <strong><a href="ec2-13-56-158-108.us-west-1.compute.amazonaws.com:3003">ec2-13-56-158-108.us-west-1.compute.amazonaws.com:3003</a></strong>
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+
+  <div id="success" class="alert alert-success" role="alert" style="display:none;">
+    A simple success alert—check it out!
+  </div>
+
+  <div id="failure" class="alert alert-danger" role="alert" style="display:none;">
+    A simple danger alert—check it out!
+  </div>
+
+  <!-- <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script> -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.1.0/socket.io.js"></script>
+  <script src="/web_client_app.js"></script>
+</body>
+</html>
