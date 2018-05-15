@@ -3,6 +3,9 @@
 # visibility-uptime-checker
 Endpoint uptime checker for visibility platform
 
+## TODO
+Add in persistence for when an endpoint was first measured
+
 ## Setup
 
 1. Install Go
