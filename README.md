@@ -1,5 +1,10 @@
+![screenshoot](https://i.imgur.com/TkTiNGP.jpg)
+
 # visibility-uptime-checker
 Endpoint uptime checker for visibility platform
+
+## TODO
+- [ ] Add in persistence for when an endpoint was first measured
 
 ## Setup
 
