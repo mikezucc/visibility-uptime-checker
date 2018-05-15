@@ -30,38 +30,42 @@ func getAPITestResult(endpoint string) APITestResult {
 
   logger, _ := zap.NewProduction()
   defer logger.Sync()
-  logger.Info("dankmemes-get-time",
+  logger.Info("api-get-time",
     zap.String("url", endpoint),
     zap.Duration("time", elapsed_time),
     zap.Int("i", 0),
   )
 
-  code := checkAndZap(err)
+  code := SanitizeStatusCode(resp, endpoint, elapsed_time, err)
 
-  body, err := ioutil.ReadAll(resp.Body)
-  body_size := len(body)
-
-  logger, _ = zap.NewProduction()
-  logger.Info("failed to fetch URL",
-    zap.String("url", endpoint),
-    zap.Duration("time", elapsed_time),
-    zap.Int("bs", body_size),
-    zap.Int("i", 0),
-  )
   return APITestResult{endpoint, elapsed_time, code}
 }
 
-func checkAndZap(err error) int {
+// if DNS fails it will panic. thanks http?
+func SanitizeStatusCode(resp *http.Response, endpoint string, elapsed_time time.Duration, err error) int {
+  logger, _ := zap.NewProduction()
+  defer logger.Sync()
   if err != nil {
     fmt.Println(err)
-    logger, _ := zap.NewProduction()
-    defer logger.Sync()
-    logger.Info("dankmemes-checkAndZap",
-      zap.String("code", "4xx"),
+    logger.Error("api-SanitizeStatusCode",
+      zap.Int("code", 502),
     )
-    return 400
+    return 502
+  } else {
+    body, err := ioutil.ReadAll(resp.Body)
+    if err != nil {
+      body_size := len(body)
+      logger.Info("Result",
+        zap.String("url", endpoint),
+        zap.Duration("time", elapsed_time),
+        zap.Int("bs", body_size),
+        zap.Int("i", 0),
+      )
+    } else {
+      // query Max for good practices
+    }
   }
-  return 200
+  return resp.StatusCode
 }
 
 // MUSINGS -
