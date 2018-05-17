@@ -11,9 +11,11 @@ import (
 )
 
 type APITestResult struct {
-  url string
-  time_elapsed time.Duration
-  code int
+  endpoint        string
+  time_performed  time.Time
+  time_elapsed    time.Duration
+  body_len        int
+  code            int
 }
 
 func getAPITestResult(endpoint string) APITestResult {
@@ -25,7 +27,7 @@ func getAPITestResult(endpoint string) APITestResult {
   }()
 
   start_time := time.Now()
-  resp, err := http.Get(endpoint)
+  resp, err := http.Get(endpoint) // should define http with Timeout
   elapsed_time := time.Since(start_time)
 
   logger, _ := zap.NewProduction()
@@ -36,13 +38,14 @@ func getAPITestResult(endpoint string) APITestResult {
     zap.Int("i", 0),
   )
 
-  code := SanitizeStatusCode(resp, endpoint, elapsed_time, err)
+  code, body_len := SanitizeStatusCode(resp, endpoint, elapsed_time, err)
 
-  return APITestResult{endpoint, elapsed_time, code}
+  return APITestResult{endpoint: endpoint, time_performed: start_time, time_elapsed: elapsed_time, body_len: body_len, code: code}
 }
 
 // if DNS fails it will panic. thanks http?
-func SanitizeStatusCode(resp *http.Response, endpoint string, elapsed_time time.Duration, err error) int {
+func SanitizeStatusCode(resp *http.Response, endpoint string, elapsed_time time.Duration, err error) (int, int) {
+  var body_size int
   logger, _ := zap.NewProduction()
   defer logger.Sync()
   if err != nil {
@@ -50,11 +53,11 @@ func SanitizeStatusCode(resp *http.Response, endpoint string, elapsed_time time.
     logger.Error("api-SanitizeStatusCode",
       zap.Int("code", 502),
     )
-    return 502
+    return 502, 0
   } else {
     body, err := ioutil.ReadAll(resp.Body)
     if err != nil {
-      body_size := len(body)
+      body_size = len(body)
       logger.Info("Result",
         zap.String("url", endpoint),
         zap.Duration("time", elapsed_time),
@@ -65,7 +68,7 @@ func SanitizeStatusCode(resp *http.Response, endpoint string, elapsed_time time.
       // query Max for good practices
     }
   }
-  return resp.StatusCode
+  return resp.StatusCode, body_size
 }
 
 // MUSINGS -

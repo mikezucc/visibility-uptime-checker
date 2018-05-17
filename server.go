@@ -1,6 +1,7 @@
 package main
 
 import (
+  "encoding/json"
   "errors"
   "fmt"
   "log"
@@ -16,6 +17,10 @@ const (
 	day  = time.Minute * 60 * 24
 	year = 365 * day
 )
+
+/** ZERO SCOPE IVARS */
+var cache CACHE
+var server *socketio.Server
 
 func duration(d time.Duration) string {
 	if d < day {
@@ -37,7 +42,6 @@ func duration(d time.Duration) string {
 	return b.String()
 }
 
-
 func main() {
   var err error
   defer func() {
@@ -46,14 +50,18 @@ func main() {
       }
   }()
 
+  cache = CACHE{cached_results: loadRecords()}
+
   namespace_notification_root_domain := "nnrd0"
   event_status_update := "esu0"
   event_status_result := "esr0"
   server_uptime_update := "suu0"
+  server_cache_burst := "scb0"
 
   server_uptime_start := time.Now().Round(0).Add(-(3600 + 60 + 45) * time.Second)
 
-  server, _ := socketio.NewServer(nil)
+  server_loc, _ := socketio.NewServer(nil)
+  server = server_loc
 
   server.On("connection", func(so socketio.Socket) {
 		fmt.Println("[SOCKETIO] NEW connected to client %s", so.Id())
@@ -64,15 +72,20 @@ func main() {
     so.On(event_status_update, func(data string) {
       fmt.Println("[SOCKETIO] EVENT ")
 
-      result := getAPITestResult(data)
+      result := getAPITestResult(data) //APITestResult
       // send result to web page
       result_string := fmt.Sprintf("%#v", result)
-      so.Emit(event_status_result, result_string)
-
-      up_time := time.Since(server_uptime_start)
-      up_time_string := duration(up_time)
-      so.Emit(server_uptime_update, up_time_string)
+      results_map := make(map[string]string)
+      results_map["response"] = result_string
+      results_map["endpoint"] = data
+      results_json, err := json.Marshal(results_map)
+      so.Emit(event_status_result, results_json)
+      recordAPIResult(result)
     })
+
+    cached_json, err := json.Marshal(cache)
+    fmt.Println(err)
+    so.Emit(server_cache_burst, cached_json)
 
     /** Default Socket.io callbacks */
     so.On("disconnection", func() {
@@ -85,8 +98,8 @@ func main() {
   http.Handle("/socket.io/", server)
   http.Handle("/", http.FileServer(http.Dir("./public")))
 
-  log.Println("[SOCKETIO] Serving all :3003...")
-  log.Fatal(http.ListenAndServe(":3003", nil))
+  log.Println("[SOCKETIO] Serving all :3008...")
+  log.Fatal(http.ListenAndServe(":308", nil))
 	server.On("error", func(so socketio.Socket, err error) {
   	log.Println("[SOCKETIO] error:", err)
   })
