@@ -14,7 +14,7 @@ Endpoint uptime checker for visibility platform
 2. Clone
 3. `go build`
 4. `./visibility-uptime-checker`
-5. Visit `localhost:3003/uh_oh.html`
+5. Visit `localhost:3008/uh_oh.html`
 6. Enter in an address *WITH* a protocol
 
 ## Deps
