@@ -76,11 +76,9 @@ func main() {
 
       result := getAPITestResult(data) //APITestResult
       // send result to web page
-      result_string := fmt.Sprintf("%#v", result)
-      results_map := make(map[string]string)
-      results_map["response"] = result_string
-      results_map["endpoint"] = data
-      results_json, err := json.Marshal(results_map)
+      fmt.Println(result)
+      results_json, err := json.Marshal(result)
+      fmt.Println(string(results_json))
       if err != nil {
         fmt.Println("[SOCKETIO] failed encode api result: " + err.Error())
       }

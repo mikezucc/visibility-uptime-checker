@@ -10,15 +10,7 @@ import (
   "go.uber.org/zap"
 )
 
-type APITestResult struct {
-  endpoint                string `json:"endpoint"`
-  time_performed       time.Time `json:"time_performed"`
-  time_elapsed     time.Duration `json:"time_elapsed"`
-  body_len                   int `json:"body_len"`
-  code                       int `json:"code"`
-}
-
-func getAPITestResult(endpoint string) APITestResult {
+func getAPITestResult(endpoint string) HttpAPIResult {
   var err error
   defer func() {
       if (recover() != nil) {
@@ -40,7 +32,12 @@ func getAPITestResult(endpoint string) APITestResult {
 
   code, body_len := SanitizeStatusCode(resp, endpoint, elapsed_time, err)
 
-  return APITestResult{endpoint: endpoint, time_performed: start_time, time_elapsed: elapsed_time, body_len: body_len, code: code}
+  api_result := HttpAPIResult{ResultEndpoint: endpoint,
+                              ResultStatusCode: code,
+                              ResultLen: body_len,
+                              ResultTimePerformed: start_time.UnixNano(),
+                              ResultRoundtrip: elapsed_time.Nanoseconds()}
+  return api_result
 }
 
 // if DNS fails it will panic. thanks http?
