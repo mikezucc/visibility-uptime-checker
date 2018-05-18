@@ -1,5 +1,5 @@
 window.onload = function() {
-  var k_SOCKET_ENDPOINT_PUBLIC_OSIRIS = "ws://" + window.location.hostname + ':3003';
+  var k_SOCKET_ENDPOINT_PUBLIC_OSIRIS = "ws://" + window.location.hostname + ':3008';
 
   // essentially force web socket here
   var socket = io(k_SOCKET_ENDPOINT_PUBLIC_OSIRIS, {transports: ['websocket']});
@@ -31,7 +31,9 @@ window.onload = function() {
   document.getElementById("endpoint").addEventListener("keyup", function(event) {
     // Cancel the default action, if needed
     event.preventDefault();
-    // Number 13 is the "Enter" key on the keyboard
+    e = event || window.event;
+    // Number 13 is the "Enter" keyCode on the keyboard
+    if (e.keyCode == 13)
     socket.emit(event_status_update, document.getElementById("endpoint").value)
   });
 

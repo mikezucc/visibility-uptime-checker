@@ -55,10 +55,10 @@ func main() {
   namespace_notification_root_domain := "nnrd0"
   event_status_update := "esu0"
   event_status_result := "esr0"
-  server_uptime_update := "suu0"
+  // server_uptime_update := "suu0"
   server_cache_burst := "scb0"
 
-  server_uptime_start := time.Now().Round(0).Add(-(3600 + 60 + 45) * time.Second)
+  // server_uptime_start := time.Now().Round(0).Add(-(3600 + 60 + 45) * time.Second)
 
   server_loc, _ := socketio.NewServer(nil)
   server = server_loc
@@ -79,12 +79,17 @@ func main() {
       results_map["response"] = result_string
       results_map["endpoint"] = data
       results_json, err := json.Marshal(results_map)
+      if err != nil {
+        fmt.Println("[SOCKETIO] failed encode api result: " + err.Error())
+      }
       so.Emit(event_status_result, results_json)
       recordAPIResult(result)
     })
 
     cached_json, err := json.Marshal(cache)
-    fmt.Println(err)
+    if err != nil {
+      fmt.Println("[SOCKETIO] Cache encode failed: " + err.Error())
+    }
     so.Emit(server_cache_burst, cached_json)
 
     /** Default Socket.io callbacks */
@@ -99,7 +104,7 @@ func main() {
   http.Handle("/", http.FileServer(http.Dir("./public")))
 
   log.Println("[SOCKETIO] Serving all :3008...")
-  log.Fatal(http.ListenAndServe(":308", nil))
+  log.Fatal(http.ListenAndServe(":3008", nil))
 	server.On("error", func(so socketio.Socket, err error) {
   	log.Println("[SOCKETIO] error:", err)
   })
