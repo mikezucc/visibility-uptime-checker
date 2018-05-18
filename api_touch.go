@@ -11,11 +11,11 @@ import (
 )
 
 type APITestResult struct {
-  endpoint        string
-  time_performed  time.Time
-  time_elapsed    time.Duration
-  body_len        int
-  code            int
+  endpoint                string `json:"endpoint"`
+  time_performed       time.Time `json:"time_performed"`
+  time_elapsed     time.Duration `json:"time_elapsed"`
+  body_len                   int `json:"body_len"`
+  code                       int `json:"code"`
 }
 
 func getAPITestResult(endpoint string) APITestResult {

@@ -18,13 +18,23 @@ window.onload = function() {
   socket.on(event_status_result, function (data) {
     console.log(data);
     if (data.indexOf("200") != -1) {
-      document.getElementById("success").style.display = "block";
-      document.getElementById("success").innerHTML = data;
-      document.getElementById("failure").style.display = "none";
+      var result_pre_format = JSON.stringify(JSON.parse(data, null, "\t"), null, "\t")
+      var resultDiv = $('#success').clone();
+      var rana = (Math.floor(Math.random() * 10000)).toString();
+      resultDiv.attr('id',);
+      var sessionMessage = '<pre id="session-message-"' + rana +' "style="word-wrap: break-word; white-space: pre-wrap; margin-bottom:0px;">'+ result_pre_format + '</pre>';
+      resultDiv.html(sessionMessage)
+      resultDiv.prependTo($('#status-container'))
+      resultDiv.show()
     } else {
-      document.getElementById("failure").style.display = "block";
-      document.getElementById("failure").innerHTML = data;
-      document.getElementById("success").style.display = "none";
+      var result_pre_format = JSON.parse(data, null, "\t")
+      var resultDiv = $('#failure').clone();
+      var rana = (Math.floor(Math.random() * 10000)).toString();
+      resultDiv.attr('id',);
+      var sessionMessage = '<pre id="session-message-"' + rana +' "style="word-wrap: break-word; white-space: pre-wrap; margin-bottom:0px;">'+ result_pre_format + '</pre>';
+      resultDiv.html(sessionMessage)
+      resultDiv.prependTo($('#status-container'))
+      resultDiv.show()
     }
   })
 
@@ -38,9 +48,10 @@ window.onload = function() {
   });
 
   socket.on(server_cache_burst, function (data) {
-    console.log(json);
+    console.log(data);
     var cache_results = JSON.parse(data);
-    for (var result_idx in cached_results.Endpoints) {
+    console.log(cache_results);
+    for (var result_idx in cache_results.Endpoints) {
       var result = cache_results.Endpoints[result_idx];
       var result_pre_format = JSON.stringify(result, null, "\t");
       var resultDiv = $('#success').clone();
@@ -48,7 +59,7 @@ window.onload = function() {
       resultDiv.attr('id',);
       var sessionMessage = '<pre id="session-message-"' + rana +' "style="word-wrap: break-word; white-space: pre-wrap; margin-bottom:0px;">'+ result_pre_format + '</pre>';
       resultDiv.html(sessionMessage)
-      resultDiv.appendTo($('#status-container'))
+      resultDiv.prependTo($('#status-container'))
       resultDiv.show()
     }
   })

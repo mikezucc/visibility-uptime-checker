@@ -51,6 +51,8 @@ func main() {
   }()
 
   cache = CACHE{cached_results: loadRecords()}
+  cached_json, err := json.Marshal(cache.cached_results)
+  fmt.Println(string(cached_json))
 
   namespace_notification_root_domain := "nnrd0"
   event_status_update := "esu0"
@@ -82,15 +84,16 @@ func main() {
       if err != nil {
         fmt.Println("[SOCKETIO] failed encode api result: " + err.Error())
       }
-      so.Emit(event_status_result, results_json)
+      so.Emit(event_status_result, string(results_json))
       recordAPIResult(result)
     })
 
-    cached_json, err := json.Marshal(cache)
-    if err != nil {
+    cached_json, err := json.Marshal(cache.cached_results)
+    if err == nil {
+      so.Emit(server_cache_burst, string(cached_json))
+    } else {
       fmt.Println("[SOCKETIO] Cache encode failed: " + err.Error())
     }
-    so.Emit(server_cache_burst, cached_json)
 
     /** Default Socket.io callbacks */
     so.On("disconnection", func() {
