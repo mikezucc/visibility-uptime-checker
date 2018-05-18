@@ -1,11 +1,12 @@
-![screenshoot](https://i.imgur.com/TkTiNGP.jpg)
+![screenshoot](https://i.imgur.com/tt9NLdy.png)
 
 # visibility-uptime-checker
 Endpoint uptime checker for visibility platform
 
 ## TODO
-- [ ] Add in persistence for when an endpoint was first measured
-- [ ] Display basic stats for endpoints
+- [x] Add in persistence for when an endpoint was first measured
+- [x] Display basic stats for endpoints
+- [ ] Interactive JSON viewer to have cleaner browsing of history
 
 ## Setup
 
