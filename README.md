@@ -1,11 +1,13 @@
-![screenshoot](https://i.imgur.com/TkTiNGP.jpg)
+![screenshoot](https://i.imgur.com/tt9NLdy.png)
 
 # visibility-uptime-checker
 Endpoint uptime checker for visibility platform
 
 ## TODO
-- [ ] Add in persistence for when an endpoint was first measured
-- [ ] Display basic stats for endpoints
+- [x] Add in persistence for when an endpoint was first measured
+- [x] Display basic stats for endpoints
+- [ ] Interactive JSON viewer to have cleaner browsing of history
+- [ ] Add timer to continually query provided endpoints (include HttpRequest timeout)
 
 ## Setup
 
@@ -13,7 +15,7 @@ Endpoint uptime checker for visibility platform
 2. Clone
 3. `go build`
 4. `./visibility-uptime-checker`
-5. Visit `localhost:3003/uh_oh.html`
+5. Visit `localhost:3008/uh_oh.html`
 6. Enter in an address *WITH* a protocol
 
 ## Deps
