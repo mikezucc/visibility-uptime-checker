@@ -7,6 +7,7 @@ Endpoint uptime checker for visibility platform
 - [x] Add in persistence for when an endpoint was first measured
 - [x] Display basic stats for endpoints
 - [ ] Interactive JSON viewer to have cleaner browsing of history
+- [ ] Add timer to continually query provided endpoints (include HttpRequest timeout)
 
 ## Setup
 
