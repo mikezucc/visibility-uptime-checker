@@ -8,6 +8,7 @@ import (
   "net/http"
   "time"
   "strings"
+  "sync"
 
   "github.com/googollee/go-socket.io"
 )
@@ -18,9 +19,15 @@ const (
 	year = 365 * day
 )
 
+type ServerStatus struct {
+  Code string
+}
+
 /** ZERO SCOPE IVARS */
 var cache CACHE
 var server *socketio.Server
+
+var serverStatus string
 
 func duration(d time.Duration) string {
 	if d < day {
@@ -49,6 +56,8 @@ func main() {
           err = errors.New("panic occurred")
       }
   }()
+
+  serverStatus = "200"
 
   cache = CACHE{cached_results: loadRecords()}
   cached_json, err := json.Marshal(cache.cached_results)
@@ -99,15 +108,56 @@ func main() {
     })
 	})
 
-
   /** Routes */
   http.Handle("/socket.io/", server)
   http.Handle("/", http.FileServer(http.Dir("./public")))
 
   log.Println("[SOCKETIO] Serving all :3008...")
-  log.Fatal(http.ListenAndServe(":3008", nil))
-	server.On("error", func(so socketio.Socket, err error) {
-  	log.Println("[SOCKETIO] error:", err)
-  })
+  go func() {
+    fmt.Println("[status] server start goroutine")
+    log.Fatal(http.ListenAndServe(":3008", nil))
+    server.On("error", func(so socketio.Socket, err error) {
+      log.Println("[SOCKETIO] error:", err)
+      if err == nil {
+        serverStatus = "500"
+      } else {
+        serverStatus = "200"
+      }
+    })
+    fmt.Println("[status] servers fine")
+  }()
+
+  fmt.Println("[status]  slideways")
+
+	ticker := time.NewTicker(2000 * time.Millisecond)
+	go func() {
+    fmt.Println("[statuis]  server TICK goroutine")
+    if serverStatus == "500" {
+      fmt.Println("[status] HTTP server failed to start, returning tick early")
+      return
+    }
+		for timeidx := range ticker.C {
+      fmt.Println(timeidx)
+			for endpointName, _ := range cache.cached_results.Endpoints {
+        result := getAPITestResult(endpointName) //APITestResult
+        // send result to web page
+        fmt.Println(result)
+        results_json, err := json.Marshal(result)
+        fmt.Println(string(results_json))
+        if err != nil {
+          fmt.Println("[SOCKETIO] failed encode api result: " + err.Error())
+        }
+        recordAPIResult(result)
+      }
+      cached_json, err := json.Marshal(cache.cached_results)
+      if err == nil {
+			  server.BroadcastTo(namespace_notification_root_domain, server_cache_burst, string(cached_json))
+      }
+		}
+  }()
+
+  var wg sync.WaitGroup
+  wg.Add(1)
+  wg.Wait()
 
 }
